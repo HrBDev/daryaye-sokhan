@@ -22,6 +22,10 @@ android {
         targetCompatibility = 1.8
         sourceCompatibility = 1.8
     }
+    // Will be moved to buildFeatures in AS 4.0+
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
