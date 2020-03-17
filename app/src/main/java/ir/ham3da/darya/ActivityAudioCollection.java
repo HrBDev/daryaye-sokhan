@@ -1,12 +1,5 @@
 package ir.ham3da.darya;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,8 +7,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -28,25 +25,21 @@ import java.util.List;
 
 import ir.ham3da.darya.adaptors.AdaptorAudio;
 import ir.ham3da.darya.adaptors.ScheduleAudio;
+import ir.ham3da.darya.databinding.ActivityAudioCollectionBinding;
+import ir.ham3da.darya.ganjoor.GanjoorAudioInfo;
 import ir.ham3da.darya.ganjoor.GanjoorDbBrowser;
 import ir.ham3da.darya.utility.AppSettings;
 import ir.ham3da.darya.utility.AudioXmlParser;
 import ir.ham3da.darya.utility.DownloadAudioTask;
-
-import ir.ham3da.darya.ganjoor.GanjoorAudioInfo;
+import ir.ham3da.darya.utility.DownloadFromUrl;
 import ir.ham3da.darya.utility.MyDialogs;
 import ir.ham3da.darya.utility.PoemAudio;
 import ir.ham3da.darya.utility.SetLanguage;
 import ir.ham3da.darya.utility.UtilFunctions;
-import ir.ham3da.darya.utility.DownloadFromUrl;
 
 public class ActivityAudioCollection extends AppCompatActivity {
 
     GanjoorDbBrowser _DbBrowser;
-
-    RecyclerView recycler_audio;
-
-    SwipeRefreshLayout simpleSwipeRefreshLayout;
     MyDialogs MyDialogs1;
 
     public AdaptorAudio adaptorAudio;
@@ -56,7 +49,7 @@ public class ActivityAudioCollection extends AppCompatActivity {
 
     int poem_id;
 
-    TextView no_item_textview;
+    ActivityAudioCollectionBinding b;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -89,7 +82,8 @@ public class ActivityAudioCollection extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_audio_collection);
+        b = ActivityAudioCollectionBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -98,20 +92,16 @@ public class ActivityAudioCollection extends AppCompatActivity {
         setTitle(R.string.download_declaim);
 
         _DbBrowser = new GanjoorDbBrowser(this);
-        recycler_audio = findViewById(R.id.recycler_audio);
-        no_item_textview = findViewById(R.id.no_item_textview);
 
         AppSettings.Init(this);
 
         poem_id = getIntent().getIntExtra("poem_id", 0);
 
-        simpleSwipeRefreshLayout = findViewById(R.id.simpleSwipeRefreshLayout);
-
-        simpleSwipeRefreshLayout.setOnRefreshListener(this::loadItems);
+        b.simpleSwipeRefreshLayout.setOnRefreshListener(this::loadItems);
 
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recycler_audio.setLayoutManager(linearLayoutManager);
+        b.recyclerAudio.setLayoutManager(linearLayoutManager);
 
 
         if (UtilFunctions.isNetworkConnected(this)) {
@@ -149,8 +139,8 @@ public class ActivityAudioCollection extends AppCompatActivity {
                 adaptorAudio.notifyDataSetChanged();
             }
 
-            if (!simpleSwipeRefreshLayout.isRefreshing()) {
-                simpleSwipeRefreshLayout.setRefreshing(true);
+            if (!b.simpleSwipeRefreshLayout.isRefreshing()) {
+                b.simpleSwipeRefreshLayout.setRefreshing(true);
             }
         }
 
@@ -172,8 +162,8 @@ public class ActivityAudioCollection extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
 
-            if (simpleSwipeRefreshLayout.isRefreshing()) {
-                simpleSwipeRefreshLayout.setRefreshing(false);
+            if (b.simpleSwipeRefreshLayout.isRefreshing()) {
+                b.simpleSwipeRefreshLayout.setRefreshing(false);
             }
 
             SetLists(result);
@@ -233,18 +223,18 @@ private  boolean checkExistAudio(GanjoorAudioInfo ganjoorAudioInfo)
 
                 if (newAudioList2.size() > 0)
                 {
-                    no_item_textview.setVisibility(View.GONE);
+                    b.noItemTextview.setVisibility(View.GONE);
                     listXmlItems = newAudioList2;
                     if (adaptorAudio != null) {
                         adaptorAudio.notifyDataSetChanged();
                     } else {
                         adaptorAudio = new AdaptorAudio(listXmlItems, this);
-                        recycler_audio.setAdapter(adaptorAudio);
+                        b.recyclerAudio.setAdapter(adaptorAudio);
                     }
-                    recycler_audio.scrollTo(0, 0);
+                    b.recyclerAudio.scrollTo(0, 0);
                 } else {
 
-                    no_item_textview.setVisibility(View.VISIBLE);
+                    b.noItemTextview.setVisibility(View.VISIBLE);
                     Toast.makeText(this, getString(R.string.nothing_found), Toast.LENGTH_SHORT).show();
                 }
 
