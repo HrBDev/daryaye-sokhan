@@ -3,29 +3,23 @@ package ir.ham3da.darya;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ir.ham3da.darya.adaptors.CateRecycleAdaptor;
 import ir.ham3da.darya.adaptors.CategoryRecycleAdaptor;
 import ir.ham3da.darya.adaptors.PoemsRecycleAdaptor;
+import ir.ham3da.darya.databinding.ActivityCateBinding;
 import ir.ham3da.darya.ganjoor.CateWithPoem;
 import ir.ham3da.darya.ganjoor.GanjoorCat;
 import ir.ham3da.darya.ganjoor.GanjoorDbBrowser;
@@ -43,34 +37,28 @@ public class ActivityCate extends AppCompatActivity {
     GanjoorCat GanjoorCat1;
     GanjoorPoet GanjoorPoet1;
 
-    RecyclerView recyclerView;
-
     RecyclerView.Adapter adapter;
     List<GanjoorCat> cateList;
     List<GanjoorPoem> poemList;
 
     List<CateWithPoem> cateWithPoemList;
 
-    CollapsingToolbarLayout toolbarLayout;
-
     UtilFunctions UtilFunctions1;
-
+    ActivityCateBinding b;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cate);
+        b = ActivityCateBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
 
-        Toolbar toolbar = findViewById(R.id.toolbar_cate);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(b.cateHeader.toolbarCate);
 
         UtilFunctions1 = new UtilFunctions(this);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-
-        fab.setOnClickListener(v ->
+        b.fab.setOnClickListener(v ->
         {
             Intent  intent = new Intent(this, ActivityPuzzle.class);
             intent.putExtra("parentCate", cate_id);
@@ -80,17 +68,12 @@ public class ActivityCate extends AppCompatActivity {
         );
 
 
-        fab.setOnLongClickListener(v -> {
+        b.fab.setOnLongClickListener(v -> {
             Toast.makeText(v.getContext(), R.string.dont_forget_poetry, Toast.LENGTH_SHORT).show();
             return true;
         });
 
-
-
-
-
-        toolbarLayout = findViewById(R.id.toolbar_layout);
-        UtilFunctions1.setupToolbarLayout(toolbarLayout, true);
+        UtilFunctions1.setupToolbarLayout(b.cateHeader.toolbarLayout, true);
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ActionBar actionBar = getSupportActionBar();
@@ -119,7 +102,7 @@ public class ActivityCate extends AppCompatActivity {
         {
             GanjoorCat parentCate = GanjoorDbBrowser1.getCat(GanjoorCat1._ParentID);
             poet_name.setText(parentCate._Text);
-            toolbarLayout.setTitle(GanjoorCat1._Text);
+            b.cateHeader.toolbarLayout.setTitle(GanjoorCat1._Text);
         }
         else
         {
@@ -127,16 +110,15 @@ public class ActivityCate extends AppCompatActivity {
             if(GanjoorPoet1._CatID == GanjoorCat1._ID)
             {
 
-                toolbarLayout.setTitle(getString(R.string.poetry_collection));
+                b.cateHeader.toolbarLayout.setTitle(getString(R.string.poetry_collection));
             }
             else {
-                toolbarLayout.setTitle(GanjoorCat1._Text);
+                b.cateHeader.toolbarLayout.setTitle(GanjoorCat1._Text);
             }
 
         }
 
 
-        recyclerView = findViewById(R.id.cate_recycler_view);
         //
         int subCatsCount = GanjoorDbBrowser1.getSubCatsCount(cate_id);
 
@@ -171,9 +153,9 @@ public class ActivityCate extends AppCompatActivity {
             adapter = new PoemsRecycleAdaptor(poemList, this);
         }
 
-        recyclerView.setAdapter(adapter);
+        b.cateRecyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        b.cateRecyclerView.setLayoutManager(linearLayoutManager);
 
     }
 

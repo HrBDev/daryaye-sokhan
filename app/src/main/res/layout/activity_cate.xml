@@ -8,7 +8,9 @@
     android:fitsSystemWindows="true"
     tools:context=".ActivityCate">
 
-    <include layout="@layout/cate_header" />
+    <include
+        android:id="@+id/cate_header"
+        layout="@layout/cate_header" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cate_recycler_view"
