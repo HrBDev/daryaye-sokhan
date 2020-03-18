@@ -3,13 +3,11 @@ package ir.ham3da.darya;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ImageDecoder;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -24,25 +22,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnticipateOvershootInterpolator;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.IOException;
 
+import ir.ham3da.darya.databinding.ActivityImageEditBinding;
 import ir.ham3da.darya.filters.FilterListener;
 import ir.ham3da.darya.filters.FilterViewAdapter;
 import ir.ham3da.darya.imageeditor.EmojiBSFragment;
@@ -59,7 +54,6 @@ import ir.ham3da.darya.utility.SetLanguage;
 import ir.ham3da.darya.utility.UtilFunctions;
 import ja.burhanrashid52.photoeditor.OnPhotoEditorListener;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
-import ja.burhanrashid52.photoeditor.PhotoEditorView;
 import ja.burhanrashid52.photoeditor.PhotoFilter;
 import ja.burhanrashid52.photoeditor.SaveSettings;
 import ja.burhanrashid52.photoeditor.TextStyleBuilder;
@@ -83,22 +77,21 @@ public class ActivityImageEdit extends AppCompatActivity implements
     private static final int CAMERA_REQUEST = 52;
     private static final int PICK_REQUEST = 53;
     private PhotoEditor mPhotoEditor;
-    private PhotoEditorView mPhotoEditorView;
     private PropertiesBSFragment mPropertiesBSFragment;
     private EmojiBSFragment mEmojiBSFragment;
     private StickerBSFragment mStickerBSFragment;
     // private TextView mTxtCurrentTool;
     private Typeface mWonderFont;
-    private RecyclerView mRvTools, mRvFilters;
 
     private EditingToolsAdapter mEditingToolsAdapter;
 
     private FilterViewAdapter mFilterViewAdapter = new FilterViewAdapter(this);
-    private ConstraintLayout mRootView;
     private ConstraintSet mConstraintSet = new ConstraintSet();
     private boolean mIsFilterVisible, shareRequest;
     private Uri imagSevePath;
     private Typeface mTextIranSansTf;
+
+    ActivityImageEditBinding b;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -145,10 +138,8 @@ public class ActivityImageEdit extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_edit);
-
-
-
+        b = ActivityImageEditBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
 
         AppSettings.Init(this);
 
@@ -166,8 +157,6 @@ public class ActivityImageEdit extends AppCompatActivity implements
         poemText = getIntent().getStringExtra("poemText");
         String poetName = getIntent().getStringExtra("poetName");
 
-        PhotoEditorView mPhotoEditorView = findViewById(R.id.photoEditorView);
-
         fontId = AppSettings.getPoemsFont();
 
         mTextIranSansTf = AppFontManager.getTypeface(this, fontId);
@@ -182,15 +171,15 @@ public class ActivityImageEdit extends AppCompatActivity implements
         mPropertiesBSFragment.setPropertiesChangeListener(this);
 
         LinearLayoutManager llmTools = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mRvTools.setLayoutManager(llmTools);
-        mRvTools.setAdapter(mEditingToolsAdapter);
+        b.rvFilterView.setLayoutManager(llmTools);
+        b.rvFilterView.setAdapter(mEditingToolsAdapter);
 
         LinearLayoutManager llmFilters = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mRvFilters.setLayoutManager(llmFilters);
-        mRvFilters.setAdapter(mFilterViewAdapter);
+        b.rvFilterView.setLayoutManager(llmFilters);
+        b.rvFilterView.setAdapter(mFilterViewAdapter);
        // mPhotoEditorView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-        mPhotoEditor = new PhotoEditor.Builder(this, mPhotoEditorView)
+        mPhotoEditor = new PhotoEditor.Builder(this, b.photoEditorView)
                 .setPinchTextScalable(true) // set flag to make text scalable when pinch
                 .setDefaultTextTypeface(mTextIranSansTf)
                 //.setDefaultEmojiTypeface(mEmojiTypeFace)
@@ -218,32 +207,19 @@ public class ActivityImageEdit extends AppCompatActivity implements
     }
 
     private void initViews() {
-        ImageView imgUndo;
-        ImageView imgRedo;
-        ImageView imgCamera;
-        ImageView imgGallery;
         //ImageView imgSave;
        // ImageView imgClose;
 
-        mPhotoEditorView = findViewById(R.id.photoEditorView);
         //mTxtCurrentTool = findViewById(R.id.txtCurrentTool);
-        mRvTools = findViewById(R.id.rvConstraintTools);
-        mRvFilters = findViewById(R.id.rvFilterView);
-        mRootView = findViewById(R.id.rootView);
+//        mRvTools = findViewById(R.id.rvConstraintTools);
 
-        imgUndo = findViewById(R.id.imgUndo);
-        imgUndo.setOnClickListener(this);
 
-        imgRedo = findViewById(R.id.imgRedo);
-        imgRedo.setOnClickListener(this);
+        b.imgUndo.setOnClickListener(this);
+        b.imgRedo.setOnClickListener(this);
+        b.imgCamera.setOnClickListener(this);
+        b.imgGallery.setOnClickListener(this);
 
-        imgCamera = findViewById(R.id.imgCamera);
-        imgCamera.setOnClickListener(this);
-
-        imgGallery = findViewById(R.id.imgGallery);
-        imgGallery.setOnClickListener(this);
-
-        mRvFilters.setVisibility(View.GONE);
+        b.rvFilterView.setVisibility(View.GONE);
 
         //mPhotoEditorView.getSource().setImageDrawable(getDrawable(R.drawable.paper));
 
@@ -362,7 +338,7 @@ public class ActivityImageEdit extends AppCompatActivity implements
 
                     Uri imageUri = Uri.fromFile(new File(imagePath));
 
-                    mPhotoEditorView.getSource().setImageURI(imageUri);
+                    b.photoEditorView.getSource().setImageURI(imageUri);
                     customProgressDlg.dismiss();
 
                     imagSevePath = imageUri;
@@ -407,7 +383,7 @@ public class ActivityImageEdit extends AppCompatActivity implements
                 case CAMERA_REQUEST:
                     //mPhotoEditor.clearAllViews();
                     Bitmap photo = (Bitmap) data.getExtras().get("data");
-                    mPhotoEditorView.getSource().setImageBitmap(photo);
+                    b.photoEditorView.getSource().setImageBitmap(photo);
 
                     break;
                 case PICK_REQUEST:
@@ -430,7 +406,7 @@ public class ActivityImageEdit extends AppCompatActivity implements
 //                        }
 
                         bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageURI);
-                        mPhotoEditorView.getSource().setImageBitmap(bitmap);
+                        b.photoEditorView.getSource().setImageBitmap(bitmap);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -531,23 +507,23 @@ public class ActivityImageEdit extends AppCompatActivity implements
 
     protected void showFilter(boolean isVisible) {
         mIsFilterVisible = isVisible;
-        mConstraintSet.clone(mRootView);
+        mConstraintSet.clone(b.rootView);
         Log.e(TAG, "showFilter: " + isVisible);
         if (isVisible) {
 
-            mRvFilters.setVisibility(View.VISIBLE);
+            b.rvFilterView.setVisibility(View.VISIBLE);
 
         } else {
-            mRvFilters.setVisibility(View.GONE);
+            b.rvFilterView.setVisibility(View.GONE);
 
         }
 
         ChangeBounds changeBounds = new ChangeBounds();
         changeBounds.setDuration(350);
         changeBounds.setInterpolator(new AnticipateOvershootInterpolator(1.0f));
-        TransitionManager.beginDelayedTransition(mRootView, changeBounds);
+        TransitionManager.beginDelayedTransition(b.rootView, changeBounds);
 
-        mConstraintSet.applyTo(mRootView);
+        mConstraintSet.applyTo(b.rootView);
     }
 
     @Override
