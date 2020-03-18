@@ -1,22 +1,22 @@
 package ir.ham3da.darya;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
+import ir.ham3da.darya.databinding.ActivityWebBinding;
 import ir.ham3da.darya.utility.SetLanguage;
 
 public class ActivityWeb extends AppCompatActivity {
 
-    WebView webView2;
+    ActivityWebBinding b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,18 +25,18 @@ public class ActivityWeb extends AppCompatActivity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             SetLanguage.wrap(this);
         }
-        setContentView(R.layout.activity_web);
+        b = ActivityWebBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        webView2 = findViewById(R.id.webView2);
 
         String title1 = getIntent().getStringExtra("title");
         String text = getIntent().getStringExtra("text");
         setTitle(title1);
-        webView2.loadDataWithBaseURL("file:///android_res/", text, "text/html", "UTF-8", null);
+        b.webView2.loadDataWithBaseURL("file:///android_res/", text, "text/html", "UTF-8", null);
 
     }
 
