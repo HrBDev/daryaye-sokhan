@@ -9,7 +9,7 @@
     tools:context=".ActivityCate">
 
     <include
-        android:id="@+id/cate_header"
+        android:id="@+id/app_bar"
         layout="@layout/cate_header" />
 
     <androidx.recyclerview.widget.RecyclerView

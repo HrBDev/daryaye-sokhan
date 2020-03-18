@@ -54,7 +54,7 @@ public class ActivityCate extends AppCompatActivity {
         b = ActivityCateBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
 
-        setSupportActionBar(b.cateHeader.toolbarCate);
+        setSupportActionBar(b.appBar.toolbarCate);
 
         UtilFunctions1 = new UtilFunctions(this);
 
@@ -73,7 +73,7 @@ public class ActivityCate extends AppCompatActivity {
             return true;
         });
 
-        UtilFunctions1.setupToolbarLayout(b.cateHeader.toolbarLayout, true);
+        UtilFunctions1.setupToolbarLayout(b.appBar.toolbarLayout, true);
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ActionBar actionBar = getSupportActionBar();
@@ -102,18 +102,17 @@ public class ActivityCate extends AppCompatActivity {
         {
             GanjoorCat parentCate = GanjoorDbBrowser1.getCat(GanjoorCat1._ParentID);
             poet_name.setText(parentCate._Text);
-            b.cateHeader.toolbarLayout.setTitle(GanjoorCat1._Text);
+            b.appBar.toolbarLayout.setTitle(GanjoorCat1._Text);
         }
         else
         {
             poet_name.setText(GanjoorPoet1._Name);
             if(GanjoorPoet1._CatID == GanjoorCat1._ID)
             {
-
-                b.cateHeader.toolbarLayout.setTitle(getString(R.string.poetry_collection));
+                b.appBar.toolbarLayout.setTitle(getString(R.string.poetry_collection));
             }
             else {
-                b.cateHeader.toolbarLayout.setTitle(GanjoorCat1._Text);
+                b.appBar.toolbarLayout.setTitle(GanjoorCat1._Text);
             }
 
         }
