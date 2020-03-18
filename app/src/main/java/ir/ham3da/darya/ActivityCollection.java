@@ -1,53 +1,41 @@
 package ir.ham3da.darya;
 
+import android.content.Context;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.webkit.URLUtil;
+import android.widget.SearchView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-
-import android.content.Context;
-
-import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.os.Bundle;
-
-
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.webkit.URLUtil;
-import android.widget.SearchView;
-
-import android.widget.TextView;
-import android.widget.Toast;
-
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.ByteArrayInputStream;
-
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.nio.charset.StandardCharsets;
-
 import java.util.LinkedList;
 import java.util.List;
 
+import ir.ham3da.darya.adaptors.GDBListAdaptor;
+import ir.ham3da.darya.adaptors.ScheduleGDB;
+import ir.ham3da.darya.databinding.ActivityCollectionBinding;
 import ir.ham3da.darya.ganjoor.GDBInfo;
 import ir.ham3da.darya.ganjoor.GDBList;
 import ir.ham3da.darya.ganjoor.GanjoorDbBrowser;
 import ir.ham3da.darya.utility.AppSettings;
-import ir.ham3da.darya.utility.DownloadGDBTask;
-import ir.ham3da.darya.adaptors.GDBListAdaptor;
-import ir.ham3da.darya.adaptors.ScheduleGDB;
 import ir.ham3da.darya.utility.DownloadFromUrl;
-
+import ir.ham3da.darya.utility.DownloadGDBTask;
 import ir.ham3da.darya.utility.MyDialogs;
 import ir.ham3da.darya.utility.SetLanguage;
 import ir.ham3da.darya.utility.UtilFunctions;
@@ -57,8 +45,6 @@ public class ActivityCollection extends AppCompatActivity {
 
     GanjoorDbBrowser _DbBrowser;
     public GDBListAdaptor GDBListAdaptor1;
-    RecyclerView recyclerViewCollection;
-    SwipeRefreshLayout simpleSwipeRefreshLayout;
     MyDialogs MyDialogs1;
     String dlPath;
 
@@ -69,6 +55,8 @@ public class ActivityCollection extends AppCompatActivity {
 
     private GDBList _MixedList = null;
 
+    ActivityCollectionBinding b;
+
 
     public int DlIndex = 0;
     public void StartDownloadALL()
@@ -78,7 +66,7 @@ public class ActivityCollection extends AppCompatActivity {
         {
 
             if(_MixedList._Items.size() > DlIndex) {
-                GDBListAdaptor.ViewHolder viewHolder = (GDBListAdaptor.ViewHolder) recyclerViewCollection.findViewHolderForAdapterPosition(DlIndex);
+                GDBListAdaptor.ViewHolder viewHolder = (GDBListAdaptor.ViewHolder) b.RecyclerViewCollection.findViewHolderForAdapterPosition(DlIndex);
 
                 GDBInfo GDBInfo1 =  _MixedList._Items.get(DlIndex);
 
@@ -167,8 +155,8 @@ public class ActivityCollection extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        setContentView(R.layout.activity_collection);
+        b = ActivityCollectionBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -177,15 +165,12 @@ public class ActivityCollection extends AppCompatActivity {
 
         setTitle(R.string.collections);
 
-        recyclerViewCollection = findViewById(R.id.RecyclerViewCollection);
         _DbBrowser = new GanjoorDbBrowser(this);
 
-        simpleSwipeRefreshLayout = findViewById(R.id.simpleSwipeRefreshLayout);
-
-        simpleSwipeRefreshLayout.setOnRefreshListener(this::loadItems);
+        b.simpleSwipeRefreshLayout.setOnRefreshListener(this::loadItems);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerViewCollection.setLayoutManager(linearLayoutManager);
+        b.RecyclerViewCollection.setLayoutManager(linearLayoutManager);
 
         reloadRecycleView();
 
@@ -352,8 +337,8 @@ public class ActivityCollection extends AppCompatActivity {
 
 
         GDBListAdaptor1 = new GDBListAdaptor(list, this);
-        recyclerViewCollection.setAdapter(GDBListAdaptor1);
-        recyclerViewCollection.scrollTo(0, 0);
+        b.RecyclerViewCollection.setAdapter(GDBListAdaptor1);
+        b.RecyclerViewCollection.scrollTo(0, 0);
     }
 
 
@@ -374,8 +359,8 @@ public class ActivityCollection extends AppCompatActivity {
                 GDBListAdaptor1.notifyDataSetChanged();
             }
 
-            if (!simpleSwipeRefreshLayout.isRefreshing()) {
-                simpleSwipeRefreshLayout.setRefreshing(true);
+            if (!b.simpleSwipeRefreshLayout.isRefreshing()) {
+                b.simpleSwipeRefreshLayout.setRefreshing(true);
             }
         }
 
@@ -395,8 +380,8 @@ public class ActivityCollection extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
 
-            if (simpleSwipeRefreshLayout.isRefreshing()) {
-                simpleSwipeRefreshLayout.setRefreshing(false);
+            if (b.simpleSwipeRefreshLayout.isRefreshing()) {
+                b.simpleSwipeRefreshLayout.setRefreshing(false);
             }
             SetLists(result);
         }
