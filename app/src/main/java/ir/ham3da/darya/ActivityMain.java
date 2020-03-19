@@ -1,47 +1,29 @@
 package ir.ham3da.darya;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-
 import android.os.Build;
 import android.os.Bundle;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Environment;
 import android.os.Handler;
-
-import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.Locale;
 
+import ir.ham3da.darya.databinding.ActivityMainBinding;
 import ir.ham3da.darya.ganjoor.GanjoorDbBrowser;
 import ir.ham3da.darya.ganjoor.GanjoorPoem;
 import ir.ham3da.darya.ui.main.SectionsPagerAdapter;
@@ -61,10 +43,9 @@ public class ActivityMain extends AppCompatActivity
     UtilFunctions UtilFunctions1;
     MyDialogs MyDialogs1;
     String TAG = "ActivityMain";
-    DrawerLayout drawer;
     int currentLocalIndex;
     private FirebaseAnalytics mFirebaseAnalytics;
-
+    ActivityMainBinding b;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -80,7 +61,8 @@ public class ActivityMain extends AppCompatActivity
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             SetLanguage.wrap(this);
         }
-        setContentView(R.layout.activity_main);
+        b = ActivityMainBinding .inflate(getLayoutInflater());
+        setContentView(b.getRoot());
 
         AppSettings.Init(this);
         LangSettingList langSetting = AppSettings.getLangSettingList(this);
@@ -90,18 +72,14 @@ public class ActivityMain extends AppCompatActivity
         UtilFunctions1 = new UtilFunctions(this);
         MyDialogs1 = new MyDialogs(this);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        setSupportActionBar(b.appBarMain.toolbar);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, b.drawerLayout, b.appBarMain.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
-        drawer.addDrawerListener(toggle);
+        b.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        navigationView.setNavigationItemSelectedListener(this);
+        b.navView.setNavigationItemSelectedListener(this);
 
         String DB_PATH = AppSettings.getDatabasePath(this);
         //Log.e(TAG, "DB_PATH: " + DB_PATH);
@@ -114,7 +92,7 @@ public class ActivityMain extends AppCompatActivity
         }
 
         if(UtilFunctions.getAppStoreCode() != 0) {
-            MenuItem mi = navigationView.getMenu().findItem(R.id.nav_donate);
+            MenuItem mi = b.navView.getMenu().findItem(R.id.nav_donate);
             mi.setVisible(false);
         }
 
@@ -145,10 +123,8 @@ public class ActivityMain extends AppCompatActivity
 
     public void loadPager() {
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        ViewPager viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(sectionsPagerAdapter);
-        TabLayout tabs = findViewById(R.id.tabs);
-        tabs.setupWithViewPager(viewPager);
+        b.appBarMain.viewPager.setAdapter(sectionsPagerAdapter);
+        b.appBarMain.tabs.setupWithViewPager(b.appBarMain.viewPager);
         showNotify();
     }
 
@@ -197,8 +173,8 @@ public class ActivityMain extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (b.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            b.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -356,9 +332,8 @@ public class ActivityMain extends AppCompatActivity
 
         // Handle navigation view item clicks here.
 
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-
-            drawer.closeDrawer(GravityCompat.START);
+        if (b.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            b.drawerLayout.closeDrawer(GravityCompat.START);
         }
         return true;
 
@@ -382,9 +357,8 @@ public class ActivityMain extends AppCompatActivity
             GanjoorDbBrowser GanjoorDbBrowser1 = new GanjoorDbBrowser(this);
             int getPoetsCount = GanjoorDbBrowser1.getPoetsCount();
             int getBooksCount = booksCount;
-            NavigationView navigationView = findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this);
-            View hview = navigationView.getHeaderView(0);
+            b.navView.setNavigationItemSelectedListener(this);
+            View hview = b.navView.getHeaderView(0);
             TextView textView_all_count = hview.findViewById(R.id.textView_all_count);
             String str_count_all_word = String.format(Locale.getDefault(), getString(R.string.nav_header_subtitle), getBooksCount, getPoetsCount);
             textView_all_count.setText(str_count_all_word);
