@@ -3,25 +3,18 @@ package ir.ham3da.darya;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import android.text.Layout;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
-import android.text.Layout;
-
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
+import ir.ham3da.darya.databinding.ActivityInfo2Binding;
 import ir.ham3da.darya.utility.AppSettings;
 import ir.ham3da.darya.utility.SetLanguage;
 import ir.ham3da.darya.utility.UtilFunctions;
@@ -31,16 +24,15 @@ public class ActivityInfo2 extends AppCompatActivity {
 
     UtilFunctions UtilFunctions1;
     float textSize;
-    CollapsingToolbarLayout toolbarLayout;
+
+    ActivityInfo2Binding b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_info2);
-
-        Toolbar toolbar = findViewById(R.id.toolbar_info);
-        setSupportActionBar(toolbar);
+        b = ActivityInfo2Binding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
+        setSupportActionBar(b.toolbarInfo);
 
        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -55,43 +47,34 @@ public class ActivityInfo2 extends AppCompatActivity {
         String title2 = getIntent().getStringExtra("title2");
         final String text = getIntent().getStringExtra("text");
 
-        TextView text_box_long = this.findViewById(R.id.text);
-
-        TextView title2_box1  = this.findViewById(R.id.title2);
-        ImageView info_avatar1 =  this.findViewById(R.id.info_avatar1);
-
-
         if(Build.VERSION.SDK_INT >=  Build.VERSION_CODES.O) {
-            text_box_long.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
+            b.contentActivityInfo2.text.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
         }
 
         if (!text.isEmpty()) {
-            text_box_long.setText( UtilFunctions.fromHtml(text), TextView.BufferType.SPANNABLE);
+            b.contentActivityInfo2.text.setText( UtilFunctions.fromHtml(text), TextView.BufferType.SPANNABLE);
         }
 
-        text_box_long.setTextSize(textSize);
+        b.contentActivityInfo2.text.setTextSize(textSize);
 
         if(title2.isEmpty())
         {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) info_avatar1.getLayoutParams();
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) b.infoAvatar1.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
             params.setMargins(0, 0, 0, 0);
 
-            title2_box1.setVisibility(View.GONE);
+            b.title2.setVisibility(View.GONE);
 
         }
         else {
-            title2_box1.setText(title2);
+            b.title2.setText(title2);
         }
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        b.fab.setOnClickListener(v -> UtilFunctions1.shareText(text));
 
-        fab.setOnClickListener(v -> UtilFunctions1.shareText(text));
+        UtilFunctions1.setupToolbarLayout(b.toolbarLayout, false);
 
-        toolbarLayout = findViewById(R.id.toolbar_layout);
-        UtilFunctions1.setupToolbarLayout(toolbarLayout, false);
-
-        toolbarLayout.setTitle(title1);
+        b.toolbarLayout.setTitle(title1);
     }
 
     @Override

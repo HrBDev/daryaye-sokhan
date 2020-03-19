@@ -75,7 +75,9 @@
     </com.google.android.material.appbar.AppBarLayout>
 
 
-    <include layout="@layout/content_activity_info2" />
+    <include
+        android:id="@+id/content_activity_info2"
+        layout="@layout/content_activity_info2" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
