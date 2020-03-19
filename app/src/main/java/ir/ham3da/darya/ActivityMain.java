@@ -8,8 +8,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,6 +22,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.Locale;
 
 import ir.ham3da.darya.databinding.ActivityMainBinding;
+import ir.ham3da.darya.databinding.NavHeaderMainBinding;
 import ir.ham3da.darya.ganjoor.GanjoorDbBrowser;
 import ir.ham3da.darya.ganjoor.GanjoorPoem;
 import ir.ham3da.darya.ui.main.SectionsPagerAdapter;
@@ -358,10 +357,9 @@ public class ActivityMain extends AppCompatActivity
             int getPoetsCount = GanjoorDbBrowser1.getPoetsCount();
             int getBooksCount = booksCount;
             b.navView.setNavigationItemSelectedListener(this);
-            View hview = b.navView.getHeaderView(0);
-            TextView textView_all_count = hview.findViewById(R.id.textView_all_count);
+            NavHeaderMainBinding hview = NavHeaderMainBinding.bind(b.navView.getHeaderView(0));
             String str_count_all_word = String.format(Locale.getDefault(), getString(R.string.nav_header_subtitle), getBooksCount, getPoetsCount);
-            textView_all_count.setText(str_count_all_word);
+            hview.textViewAllCount.setText(str_count_all_word);
 
         } catch (Exception ex) {
             Log.e(TAG, "setCountPoetsAndBooks: " + ex.getMessage());
