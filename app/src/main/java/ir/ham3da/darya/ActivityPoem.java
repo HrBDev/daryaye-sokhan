@@ -3,7 +3,6 @@ package ir.ham3da.darya;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -13,27 +12,11 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -45,11 +28,23 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.List;
 
 import ir.ham3da.darya.adaptors.PoemVerseRecycleAdaptor;
+import ir.ham3da.darya.databinding.ActivityPoemBinding;
 import ir.ham3da.darya.ganjoor.GanjoorCat;
 import ir.ham3da.darya.ganjoor.GanjoorDbBrowser;
 import ir.ham3da.darya.ganjoor.GanjoorPoem;
@@ -91,8 +86,6 @@ public class ActivityPoem extends AppCompatActivity {
 
     UtilFunctions UtilFunctions1;
 
-    FloatingActionButton fab;
-
     private String TAG = ActivityPoem.class.getSimpleName();
     float initialX, initialY;
 
@@ -117,6 +110,8 @@ public class ActivityPoem extends AppCompatActivity {
     private boolean AUDIO_DOWNLOAD_SHOW = false;
 
     private Handler hdlr = new Handler();
+
+    ActivityPoemBinding b;
 
 
     @Override
@@ -173,11 +168,11 @@ public class ActivityPoem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_poem);
+        b = ActivityPoemBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
 
         Toolbar toolbar = findViewById(R.id.toolbar_poem);
         setSupportActionBar(toolbar);
-        fab = findViewById(R.id.fab_poem);
 
         mContext = this;
 
@@ -361,7 +356,7 @@ public class ActivityPoem extends AppCompatActivity {
         });
 
 
-        fab.setOnClickListener(view -> {
+        b.fabPoem.setOnClickListener(view -> {
             FloatingActionButton fabObj = (FloatingActionButton) view;
 
             if (GanjoorPoem1._Faved) {
@@ -607,15 +602,12 @@ public class ActivityPoem extends AppCompatActivity {
 
     private void checkIsFavorite() {
         if (GanjoorPoem1._Faved) {
-            fab.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.mark_fav)));
-
+            b.fabPoem.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.mark_fav)));
         } else {
-
-            fab.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.white)));
-
+            b.fabPoem.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.white)));
         }
         animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom_in);
-        fab.startAnimation(animation);
+        b.fabPoem.startAnimation(animation);
     }
 
     @Override
